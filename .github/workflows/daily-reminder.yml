@@ -1,0 +1,67 @@
+name: 每日更新与提醒
+
+on:
+  # 定时更新 - 每天早上10点、下午两点、下午三点十分
+  schedule:
+    - cron: '0 10 * * 1-5'    # 周一到五 10:00 UTC+8
+    - cron: '0 14 * * 1-5'    # 周一到五 14:00 UTC+8
+    - cron: '10 15 * * 1-5'   # 周一到五 15:10 UTC+8
+  workflow_dispatch:          # 手动触发按钮
+
+jobs:
+  # 作业1：生成红利ETF策略分析图表
+  generate-hongli-chart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # 在所有定时时间或手动触发时运行
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+    
+    - name: Install dependencies and Chinese fonts
+      run: |
+        pip install akshare pandas matplotlib numpy jinja2 requests beautifulsoup4 pillow
+        # 安装中文字体以解决乱码问题
+        sudo apt-get update
+        sudo apt-get install -y fonts-wqy-zenhei fonts-wqy-microhei ttf-wqy-zenhei ttf-wqy-microhei fontconfig
+    
+    - name: Run Hongli ETF reminder script
+      env:
+        SAVE_DIR: .
+      run: |
+        python reminder.py
+    
+    - name: Archive output images
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: hongli-charts
+        path: 红利ETF_三种策略_梯度买卖_*_*.png
+        retention-days: 7
+
+  # 作业2：更新长江电力每日行情
+  update-changjiang-price:
+    runs-on: ubuntu-latest
+    # 在所有定时时间或手动触发时运行
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    # 依赖于红利ETF图表生成作业
+    needs: generate-hongli-chart
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install akshare jinja2
+      - run: python update.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: auto update 600900 price'
