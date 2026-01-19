@@ -1,4 +1,4 @@
-import akshare as ak, json, datetime, jinja2
+import akshare as ak, json, datetime, jinja2, os, glob
 
 # 1. 用 akshare 拉当日行情
 df = ak.stock_zh_a_hist(symbol="600900", period="daily", adjust="")
@@ -10,11 +10,21 @@ date  = row['日期'].strftime('%Y-%m-%d')
 with open('price.json','w',encoding='utf-8') as f:
     json.dump({'date':date, 'price':price}, f, ensure_ascii=False)
 
-# 3. 生成极简 html
+# 3. 查找最新的红利ETF PNG图片
+png_files = glob.glob('红利ETF_三种策略_梯度买卖_*_*.png')
+# 按修改时间排序，最新的在前面
+png_files.sort(key=os.path.getmtime, reverse=True)
+latest_png = png_files[0] if png_files else None
+
+# 4. 生成包含图片的HTML
 html = jinja2.Template('''
 <!doctype html><meta charset="utf-8">
 <title>长江电力每日行情</title>
 <h1>长江电力（600900）</h1>
 <p>日期：{{date}}  收盘价：¥{{price}}</p>
-''').render(date=date, price=price)
+{% if latest_png %}
+<h2>红利ETF策略分析</h2>
+<img src="{{latest_png}}" alt="红利ETF策略分析图" style="max-width: 100%; height: auto;">
+{% endif %}
+''').render(date=date, price=price, latest_png=latest_png)
 with open('index.html','w',encoding='utf-8') as f: f.write(html)
