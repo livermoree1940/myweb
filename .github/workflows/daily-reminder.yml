@@ -12,8 +12,8 @@ on:
       - main # 如果您的主分支不是 main，请修改这里
 
 jobs:
-  # 作业1：生成红利ETF策略分析图表
-  generate-hongli-chart:
+  # 合并后的作业：生成策略数据并更新网页
+  daily-update:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     # 在所有定时时间或手动触发时运行
@@ -41,30 +41,13 @@ jobs:
         SAVE_DIR: .
       run: |
         python reminder.py
-    
-    - name: Archive output images
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: hongli-charts
-        path: 红利ETF_三种策略_梯度买卖_*_*.png
-        retention-days: 7
+        
+    - name: Run Update Website script
+      run: |
+        python update.py
 
-  # 作业2：更新长江电力每日行情
-  update-changjiang-price:
-    runs-on: ubuntu-latest
-    # 在所有定时时间或手动触发时运行
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
-    # 依赖于红利ETF图表生成作业
-    needs: generate-hongli-chart
-    
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install akshare jinja2
-      - run: python update.py
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'chore: auto update 600900 price [skip ci]'
+    - name: Commit and Push changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: 'chore: daily update strategy and price [skip ci]'
+        file_pattern: 'index.html price.json strategy_fragment.html *.png'

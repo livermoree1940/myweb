@@ -74,13 +74,13 @@ ETF_START_DATE = "20000101"       # ETF数据起始日期
 # 自动获取当前日期作为结束日期
 ETF_END_DATE = datetime.now().strftime("%Y%m%d")  # ETF数据结束日期（当前日期）
 
-# 【邮件配置】★★★ 请修改为自己的邮箱信息 ★★★
+# 【邮件配置】(功能已禁用，仅保留配置结构)
 EMAIL_CONFIG = {
-    "sender": "3754906614@qq.com",       # 比如：123456@qq.com
-    "receiver": "3754906614@qq.com",       # 可以和发件邮箱相同
+    "sender": "your_email@qq.com",       # 比如：123456@qq.com
+    "receiver": "your_email@qq.com",       # 可以和发件邮箱相同
     "smtp_server": "smtp.qq.com",         # QQ邮箱用smtp.qq.com，163邮箱用smtp.163.com
     "smtp_port": 465,                     # SSL端口，QQ/163邮箱均为465
-    "auth_code": "oeoockwbswpndbgf",         # 不是登录密码！需在邮箱设置中开启SMTP获取
+    "auth_code": "your_auth_code",         # 不是登录密码！需在邮箱设置中开启SMTP获取
     "subject": f"红利ETF策略建议_{datetime.now().strftime('%Y%m%d')}"  # 邮件标题
 }
 
