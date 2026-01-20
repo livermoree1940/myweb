@@ -217,6 +217,116 @@ def get_extra_invest_amount(diff_value):
 
 
 
+# ===================== 保存策略HTML片段函数 =====================
+def save_strategy_html_fragment(latest_data, chart_path, df):
+    """
+    生成并保存策略HTML片段（含核心数据+普通内嵌图表+最新20条数据），供网页展示
+    :param latest_data: 最新数据字典
+    :param chart_path: 图表保存路径
+    :param df: 完整的合并数据DataFrame（用于提取最新20条）
+    """
+    # 1. 提取并格式化最新20条数据
+    latest_10_data = df.tail(20)[['date', 'close_hongli', 'close_quanzhi', 'diff_custom_days']].copy()
+    # 格式化日期
+    latest_10_data['date'] = latest_10_data['date'].dt.strftime('%Y-%m-%d')
+    # 保留小数位数
+    latest_10_data['close_hongli'] = latest_10_data['close_hongli'].round(3)
+    latest_10_data['close_quanzhi'] = latest_10_data['close_quanzhi'].round(3)
+    # 计算涨跌幅
+    latest_10_data['hongli_change(%)'] = latest_10_data['close_hongli'].pct_change() * 100
+    latest_10_data['quanzhi_change(%)'] = latest_10_data['close_quanzhi'].pct_change() * 100
+    # 收益差转百分比
+    latest_10_data['diff_custom_days(%)'] = latest_10_data['diff_custom_days'] * 100
+    # 保留2位小数，空值替换为'-'
+    latest_10_data = latest_10_data.round({
+        'hongli_change(%)': 2,
+        'quanzhi_change(%)': 2,
+        'diff_custom_days(%)': 2
+    }).fillna('-')
+    
+    # 构建最新20条数据的HTML表格
+    recent_table_html = "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse;'>"
+    # 表头
+    recent_table_html += """
+    <tr style="background-color: #f0f0f0;">
+        <th>日期</th>
+        <th>红利ETF收盘价</th>
+        <th>红利ETF涨跌幅(%)</th>
+        <th>中证全指收盘价</th>
+        <th>中证全指涨跌幅(%)</th>
+        <th>40日收益差(%)</th>
+    </tr>
+    """
+    # 数据行
+    for _, row in latest_10_data.iterrows():
+        recent_table_html += f"""
+        <tr>
+            <td>{row['date']}</td>
+            <td>{row['close_hongli']}</td>
+            <td style="color: {'red' if row['hongli_change(%)'] != '-' and row['hongli_change(%)'] > 0 else 'green' if row['hongli_change(%)'] != '-' and row['hongli_change(%)'] < 0 else 'black'};">
+                {row['hongli_change(%)']}
+            </td>
+            <td>{row['close_quanzhi']}</td>
+            <td style="color: {'red' if row['quanzhi_change(%)'] != '-' and row['quanzhi_change(%)'] > 0 else 'green' if row['quanzhi_change(%)'] != '-' and row['quanzhi_change(%)'] < 0 else 'black'};">
+                {row['quanzhi_change(%)']}
+            </td>
+            <td style="color: {'red' if row['diff_custom_days(%)'] != '-' and row['diff_custom_days(%)'] > 0 else 'green' if row['diff_custom_days(%)'] != '-' and row['diff_custom_days(%)'] < 0 else 'black'};">
+                {row['diff_custom_days(%)']}
+            </td>
+        </tr>
+        """
+    recent_table_html += "</table>"
+    
+    # 2. 构建HTML片段
+    # 图片路径使用相对路径（文件名）
+    img_filename = os.path.basename(chart_path)
+    
+    html_content = f"""
+    <div>
+        <h2>📊 红利ETF每日策略建议（{latest_data['date']}）</h2>
+        <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
+          <tr style="background-color: #f0f0f0;">
+            <th>指标</th>
+            <th>数值</th>
+          </tr>
+          <tr>
+            <td>40日收益差（红利-中证全指）</td>
+            <td><b style="color: {'red' if latest_data['diff']>0 else 'green'};">{latest_data['diff']*100:.2f}%</b></td>
+          </tr>
+          <tr>
+            <td>红利ETF最新收盘价</td>
+            <td>{latest_data['hongli_close']:.3f}</td>
+          </tr>
+          <tr>
+            <td>中证全指最新收盘价</td>
+            <td>{latest_data['quanzhi_close']:.3f}</td>
+          </tr>
+          <tr>
+            <td>信号灯状态</td>
+            <td><b>{latest_data['status']}</b></td>
+          </tr>
+          <tr>
+            <td>操作建议</td>
+            <td><b style="color: blue;">{latest_data['operation']}</b></td>
+          </tr>
+        </table>
+        <br>
+        <h4>📈 40日收益差趋势图：</h4>
+        <img src="{img_filename}" style="border: none; max-width: 100%; display: block;" />
+        <br>
+        <h4>📋 最新核心数据波动：</h4>
+        {recent_table_html}
+        <br><br>
+        <p>⚠️ 本建议仅为数据分析参考，不构成投资建议</p>
+    </div>
+    """
+    
+    # 保存到文件
+    output_path = os.path.join(os.path.dirname(chart_path), 'strategy_fragment.html')
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    print(f"✅ 策略HTML片段已保存至：{output_path}")
+
 # ===================== 邮件发送函数（普通图片版）=====================
 def send_strategy_email(latest_data, chart_path, df):
     """
@@ -913,8 +1023,8 @@ if __name__ == "__main__":
             recent_10d = recent_10d.round(2)  # 保留两位小数
             print(recent_10d.to_string(index=False))
 
-            # 7. 发送邮件
-            print("\n📧 开始发送策略邮件...")
+            # 7. 发送邮件/保存HTML
+            print("\n📧 开始生成策略内容...")
             email_data = {
                 "date": latest_date,
                 "diff": latest_diff,
@@ -923,7 +1033,9 @@ if __name__ == "__main__":
                 "status": signal_status,
                 "operation": operation
             }
-            send_strategy_email(email_data, chart_path, merge_df)  # 新增merge_df参数
+            # send_strategy_email(email_data, chart_path, merge_df)  # 新增merge_df参数
+            save_strategy_html_fragment(email_data, chart_path, merge_df)  # 保存HTML片段供网页展示
+
 
         except Exception as e:
             print(f"\n❌ 程序执行失败：{str(e)}")
