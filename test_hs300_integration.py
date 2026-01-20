@@ -3,95 +3,38 @@ from plotly.graph_objects import Scatter
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-# 定义获取股票/指数数据的函数
-def get_stock_data(symbol, name):
-    df = ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="")
-    latest = df.iloc[-1]       # 最新数据
-    previous = df.iloc[-2]     # 昨日数据
+# 创建模拟的沪深300基差数据
+def create_mock_hs300_data():
+    # 创建模拟时间序列
+    dates = pd.date_range(start='2024-01-01', end=datetime.datetime.now(), freq='D')
     
-    price = round(latest['收盘'], 2)
-    prev_price = round(previous['收盘'], 2)
-    change = round(price - prev_price, 2)
-    change_pct = round((change / prev_price) * 100, 2)
+    # 创建模拟数据
+    np.random.seed(42)
+    spot_prices = 3000 + np.cumsum(np.random.normal(0, 10, len(dates)))
+    future_prices = spot_prices + np.random.normal(5, 15, len(dates))
     
-    return {
-        'name': name,
-        'symbol': symbol,
-        'price': price,
-        'prev_price': prev_price,
-        'change': change,
-        'change_pct': change_pct
-    }
+    # 创建DataFrame
+    df_future = pd.DataFrame({'time': dates, 'close_fut': future_prices})
+    df_spot = pd.DataFrame({'time': dates, 'close_spot': spot_prices})
+    
+    # 合并数据并计算基差
+    df_basis = pd.merge(df_future, df_spot, on='time')
+    df_basis['basis'] = df_basis['close_fut'] - df_basis['close_spot']
+    
+    # 计算技术指标
+    df_basis['ma60'] = df_basis['basis'].rolling(window=60, min_periods=1).mean()
+    df_basis['mid'] = df_basis['basis'].rolling(window=20, min_periods=1).mean()
+    df_basis['std'] = df_basis['basis'].rolling(window=20, min_periods=1).std().fillna(1)
+    df_basis['upper'] = df_basis['mid'] + 2 * df_basis['std']
+    df_basis['lower'] = df_basis['mid'] - 2 * df_basis['std']
+    
+    return df_basis
 
-# 定义获取指数数据的函数
-def get_index_data(symbol, name):
-    df = ak.stock_zh_index_daily(symbol=symbol)
-    latest = df.iloc[-1]       # 最新数据
-    previous = df.iloc[-2]     # 昨日数据
-    
-    price = round(latest['close'], 2)
-    prev_price = round(previous['close'], 2)
-    change = round(price - prev_price, 2)
-    change_pct = round((change / prev_price) * 100, 2)
-    
-    return {
-        'name': name,
-        'symbol': symbol,
-        'price': price,
-        'prev_price': prev_price,
-        'change': change,
-        'change_pct': change_pct
-    }
-
-# 定义获取沪深300现货和期货数据的函数
-def get_hs300_data():
-    try:
-        # 配置代理（根据你的环境 7897 端口）
-        proxies = {"http": "http://127.0.0.1:7897", "https": "http://127.0.0.1:7897"}
-        headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://gushitong.baidu.com/"}
-        
-        def get_baidu_kline(code, is_futures=True):
-            """从百度接口获取K线数据"""
-            f_type = "true" if is_futures else "false"
-            url = f"https://finance.pae.baidu.com/selfselect/getstockquotation?all=1&code={code}&isIndex={not is_futures}&isBk=false&isBlock=false&isFutures={f_type}&isStock=false&newFormat=1&ktype=1&market_type=ab&group=quotation_futures_kline&finClientType=pc"
-            
-            response = requests.get(url, headers=headers, proxies=proxies, timeout=10)
-            res_json = response.json()
-            raw_str = res_json['Result']['newMarketData']['marketData']
-            keys = res_json['Result']['newMarketData']['keys']
-            
-            rows = [line.split(',') for line in raw_str.split(';') if line]
-            df = pd.DataFrame(rows, columns=keys)
-            df['time'] = pd.to_datetime(df['time'])
-            df['close'] = pd.to_numeric(df['close'], errors='coerce')
-            
-            return df[['time', 'close']]
-        
-        # 获取沪深300现货和期货数据
-        df_spot = get_baidu_kline("000300", is_futures=False)
-        df_future = get_baidu_kline("IF888", is_futures=True)
-        
-        # 合并数据并计算基差
-        df_basis = pd.merge(df_future, df_spot, on='time', suffixes=('_fut', '_spot'))
-        df_basis['basis'] = df_basis['close_fut'] - df_basis['close_spot']
-        
-        # 计算技术指标
-        df_basis['ma60'] = df_basis['basis'].rolling(window=60).mean()
-        df_basis['mid'] = df_basis['basis'].rolling(window=20).mean()
-        df_basis['std'] = df_basis['basis'].rolling(window=20).std()
-        df_basis['upper'] = df_basis['mid'] + 2 * df_basis['std']
-        df_basis['lower'] = df_basis['mid'] - 2 * df_basis['std']
-        
-        return df_basis
-    except Exception as e:
-        print(f"获取沪深300数据时出错: {e}")
-        return None
-
-# 定义创建沪深300基差交互式图表的函数
+# 创建沪深300基差图表
 def create_hs300_chart(df_basis):
     try:
         if df_basis is None or len(df_basis) < 20:
-            return None
+            return False
         
         # 创建图表
         fig = go.Figure()
@@ -184,63 +127,86 @@ def create_hs300_chart(df_basis):
         print(f"创建沪深300图表时出错: {e}")
         return False
 
-# 1. 获取长江电力数据
-stock_data = get_stock_data("600900", "长江电力")
+# 定义获取股票/指数数据的函数（使用模拟数据）
+def get_stock_data(symbol, name):
+    return {
+        'name': name,
+        'symbol': symbol,
+        'price': 23.56,
+        'prev_price': 23.20,
+        'change': 0.36,
+        'change_pct': 1.55
+    }
 
-# 2. 获取指数数据
-indices = [
-    get_index_data("000001", "上证指数"),
-    get_index_data("399006", "创业板指"),
-    get_index_data("000688", "科创50"),
-    get_index_data("000985", "中证全指")
-]
+# 定义获取指数数据的函数（使用模拟数据）
+def get_index_data(symbol, name):
+    mock_data = {
+        "000001": (3050.25, 3020.80),
+        "399006": (1850.75, 1880.30),
+        "000688": (950.30, 945.20),
+        "000985": (4750.80, 4720.50)
+    }
+    
+    price, prev_price = mock_data[symbol]
+    change = price - prev_price
+    change_pct = round((change / prev_price) * 100, 2)
+    
+    return {
+        'name': name,
+        'symbol': symbol,
+        'price': price,
+        'prev_price': prev_price,
+        'change': change,
+        'change_pct': change_pct
+    }
 
-# 3. 获取日期
-date = datetime.datetime.now().strftime('%Y-%m-%d')
-
-# 4. 获取沪深300基差数据并创建图表
-has_hs300_chart = False
-try:
-    print("正在获取沪深300基差数据...")
-    df_hs300 = get_hs300_data()
-    if df_hs300 is not None:
-        print("正在创建沪深300基差图表...")
-        has_hs300_chart = create_hs300_chart(df_hs300)
-        if has_hs300_chart:
-            print("沪深300基差图表创建成功！")
-        else:
-            print("沪深300基差图表创建失败！")
+# 测试整个集成过程
+def test_integration():
+    print("=== 测试沪深300基差图表集成 ===")
+    
+    # 1. 获取股票数据（模拟）
+    stock_data = get_stock_data("600900", "长江电力")
+    print(f"✓ 获取长江电力数据成功: {stock_data['price']}")
+    
+    # 2. 获取指数数据（模拟）
+    indices = [
+        get_index_data("000001", "上证指数"),
+        get_index_data("399006", "创业板指"),
+        get_index_data("000688", "科创50"),
+        get_index_data("000985", "中证全指")
+    ]
+    print("✓ 获取市场指数数据成功")
+    
+    # 3. 获取日期
+    date = datetime.datetime.now().strftime('%Y-%m-%d')
+    
+    # 4. 获取沪深300基差数据并创建图表（使用模拟数据）
+    print("正在创建模拟的沪深300基差数据...")
+    df_hs300 = create_mock_hs300_data()
+    print(f"✓ 创建沪深300基差数据成功: {len(df_hs300)} 条记录")
+    
+    print("正在创建沪深300基差图表...")
+    has_hs300_chart = create_hs300_chart(df_hs300)
+    if has_hs300_chart:
+        print("✓ 沪深300基差图表创建成功！")
     else:
-        print("未能获取沪深300数据！")
-except Exception as e:
-    print(f"处理沪深300数据时出错: {e}")
-    has_hs300_chart = False
-
-# 5. 写 json 供前端（可选）
-data = {
-    'date': date,
-    'stock': stock_data,
-    'indices': indices,
-    'has_hs300_chart': has_hs300_chart
-}
-with open('price.json','w',encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=False)
-
-# 5. 生成 html
-# 读取沪深300基差图表的HTML片段
-if has_hs300_chart:
-    try:
-        with open('hs300_basis_embed.html', 'r', encoding='utf-8') as f:
-            hs300_chart_html = f.read()
-    except Exception as e:
-        print(f"读取沪深300图表HTML时出错: {e}")
+        print("✗ 沪深300基差图表创建失败！")
+        return False
+    
+    # 5. 读取沪深300基差图表的HTML片段
+    if has_hs300_chart:
+        try:
+            with open('hs300_basis_embed.html', 'r', encoding='utf-8') as f:
+                hs300_chart_html = f.read()
+            print("✓ 读取沪深300图表HTML片段成功")
+        except Exception as e:
+            print(f"✗ 读取沪深300图表HTML时出错: {e}")
+            return False
+    else:
         hs300_chart_html = ""
-        has_hs300_chart = False
-else:
-    hs300_chart_html = ""
-
-# 生成 html
-html = jinja2.Template('''
+    
+    # 6. 生成完整的HTML页面
+    html = jinja2.Template('''
 <!doctype html>
 <html lang="zh-CN">
 <head>
@@ -421,6 +387,19 @@ html = jinja2.Template('''
 </body>
 </html>
 ''').render(date=date, stock=stock_data, indices=indices, has_hs300_chart=has_hs300_chart, hs300_chart_html=hs300_chart_html)
+    
+    # 7. 保存HTML页面
+    with open('test_index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    print("✓ 生成集成后的HTML页面成功")
+    
+    print("\n=== 测试完成 ===")
+    print("生成的文件：")
+    print("- test_index.html: 集成了沪深300基差图表的股票行情看板")
+    print("- hs300_basis_embed.html: 沪深300基差图表的HTML片段")
+    print("\n可以在浏览器中打开 test_index.html 查看集成效果")
+    
+    return True
 
-with open('index.html','w',encoding='utf-8') as f:
-    f.write(html)
+if __name__ == "__main__":
+    test_integration()
