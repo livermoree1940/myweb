@@ -1,0 +1,9 @@
+akshare
+pandas
+matplotlib
+numpy
+jinja2
+requests
+beautifulsoup4
+pillow
+plotly
