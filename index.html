@@ -1,8 +1,159 @@
 
-<!doctype html><meta charset="utf-8">
-<title>长江电力每日行情</title>
-<h1>长江电力（600900）</h1>
-<p>日期：2026-01-20  收盘价：¥26.8</p>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量化策略仪表盘 - 长江电力 & 红利ETF</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-main: #333;
+            --text-muted: #666;
+            --red: #e74c3c;
+            --green: #27ae60;
+            --blue: #3498db;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
 
-<h2>红利ETF策略分析</h2>
-<img src="红利ETF_三种策略_梯度买卖_40天_240天_20260119.png" alt="红利ETF策略分析图" style="max-width: 100%; height: auto;">
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            padding: 20px 0;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        h1 { margin: 0; color: var(--primary-color); font-size: 24px; }
+        .last-update { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+
+        /* 核心卡片样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .price-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+        }
+        
+        .price-info h2 { margin: 0; font-size: 18px; opacity: 0.9; }
+        .price-value { font-size: 32px; font-weight: bold; margin: 5px 0; }
+
+        /* 策略卡片样式 (来自fragment) */
+        .strategy-card { }
+        .card-header { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: var(--primary-color); display: flex; align-items: center; }
+        .card-header .icon { margin-right: 10px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        
+        .summary-item .label { font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+        .summary-item .value { font-size: 18px; font-weight: bold; }
+
+        .sub-card { margin-top: 25px; border-top: 1px dashed #eee; padding-top: 20px; }
+        .sub-header { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: var(--text-muted); }
+
+        .strategy-img { 
+            max-width: 650px; 
+            width: 100%; 
+            height: auto; 
+            border-radius: 8px; 
+            margin: 20px auto; 
+            display: block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* 表格样式 */
+        .table-container { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .data-table th { background: #f8f9fa; color: var(--text-muted); text-align: left; padding: 12px 8px; border-bottom: 2px solid #eee; }
+        .data-table td { padding: 10px 8px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background-color: #fafafa; }
+
+        /* 标签样式 */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .status-red { background: #fdeaea; color: #e74c3c; }
+        .status-green { background: #e6f4ea; color: #27ae60; }
+        .status-yellow { background: #fff8e1; color: #f39c12; }
+        .status-blue { background: #e8f4fd; color: #3498db; }
+
+        .text-red { color: var(--red); }
+        .text-green { color: var(--green); }
+        
+        .footer-tip { font-size: 12px; color: #999; text-align: center; margin-top: 20px; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .price-value { font-size: 24px; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>量化策略仪表盘</h1>
+            <div class="last-update">最后更新时间：2026-01-20</div>
+        </header>
+
+        <section class="card price-card">
+            <div class="price-info">
+                <h2>长江电力 (600900)</h2>
+                <div class="price-value">¥26.8</div>
+            </div>
+            <div style="text-align: right; opacity: 0.8;">
+                <div>实时收盘价</div>
+                <div style="font-size: 12px;">Market Data</div>
+            </div>
+        </section>
+
+        <section class="card">
+            
+                <div class="card-header">红利ETF 策略分析</div>
+                <img src="红利ETF_三种策略_梯度买卖_40天_240天_20260119.png" alt="策略分析图" class="strategy-img">
+            
+        </section>
+        
+        <footer style="text-align: center; margin-top: 40px; color: #999; font-size: 12px;">
+            <p>Powered by Python & GitHub Actions</p>
+        </footer>
+    </div>
+</body>
+</html>

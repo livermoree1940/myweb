@@ -217,111 +217,203 @@ def get_extra_invest_amount(diff_value):
 
 
 
+# ===================== 三大指数 K线图绘制 =====================
+def plot_index_kline(symbol, name, save_dir):
+    """获取指数历史数据并绘制带均线的K线图"""
+    try:
+        # 获取最近120天数据以计算60日均线
+        df = ak.stock_zh_index_daily_em(symbol=symbol)
+        df['date'] = pd.to_datetime(df['date'])
+        df = df.sort_values('date')
+        
+        # 计算均线
+        df['ma5'] = df['close'].rolling(5).mean()
+        df['ma10'] = df['close'].rolling(10).mean()
+        df['ma20'] = df['close'].rolling(20).mean()
+        df['ma60'] = df['close'].rolling(60).mean()
+        
+        # 只取最近60个交易日展示
+        plot_df = df.tail(60).copy()
+        plot_df = plot_df.reset_index(drop=True)
+        
+        fig, ax = plt.subplots(figsize=(10, 5))
+        
+        # 绘制K线 (简单实现)
+        for i, row in plot_df.iterrows():
+            color = 'red' if row['close'] >= row['open'] else 'green'
+            # 影线
+            ax.vlines(i, row['low'], row['high'], color=color, linewidth=1)
+            # 实体
+            height = abs(row['close'] - row['open'])
+            bottom = min(row['open'], row['close'])
+            ax.add_patch(plt.Rectangle((i - 0.3, bottom), 0.6, height, color=color))
+            
+        # 绘制均线
+        ax.plot(plot_df.index, plot_df['ma5'], label='MA5', linewidth=1, alpha=0.8)
+        ax.plot(plot_df.index, plot_df['ma10'], label='MA10', linewidth=1, alpha=0.8)
+        ax.plot(plot_df.index, plot_df['ma20'], label='MA20', linewidth=1, alpha=0.8)
+        ax.plot(plot_df.index, plot_df['ma60'], label='MA60', linewidth=1, alpha=0.8)
+        
+        ax.set_title(f"{name} ({symbol}) 最近60日K线", fontsize=14)
+        ax.legend(loc='upper left', fontsize=8)
+        ax.grid(True, alpha=0.2)
+        
+        # 设置X轴标签 (日期)
+        xticks = range(0, len(plot_df), 10)
+        ax.set_xticks(xticks)
+        ax.set_xticklabels([plot_df['date'].iloc[i].strftime('%m-%d') for i in xticks])
+        
+        save_path = os.path.join(save_dir, f"kline_{symbol}.png")
+        plt.savefig(save_path, bbox_inches='tight', dpi=100)
+        plt.close()
+        return save_path, plot_df.iloc[-1]['close'], plot_df.iloc[-1]['close']/plot_df.iloc[-2]['close'] - 1
+    except Exception as e:
+        print(f"❌ 绘制指数 {name} K线失败: {e}")
+        return None, None, None
+
 # ===================== 保存策略HTML片段函数 =====================
-def save_strategy_html_fragment(latest_data, chart_path, df):
+def save_strategy_html_fragment(latest_data, chart_path, df, index_data_list=None):
     """
-    生成并保存策略HTML片段（含核心数据+普通内嵌图表+最新20条数据），供网页展示
-    :param latest_data: 最新数据字典
-    :param chart_path: 图表保存路径
-    :param df: 完整的合并数据DataFrame（用于提取最新20条）
+    生成并保存策略HTML片段（含核心数据+普通内嵌图表+最新20条数据+三大指数），供网页展示
     """
     # 1. 提取并格式化最新20条数据
-    latest_10_data = df.tail(20)[['date', 'close_hongli', 'close_quanzhi', 'diff_custom_days']].copy()
-    # 格式化日期
-    latest_10_data['date'] = latest_10_data['date'].dt.strftime('%Y-%m-%d')
-    # 保留小数位数
-    latest_10_data['close_hongli'] = latest_10_data['close_hongli'].round(3)
-    latest_10_data['close_quanzhi'] = latest_10_data['close_quanzhi'].round(3)
+    latest_20_data = df.tail(20)[['date', 'close_hongli', 'close_quanzhi', 'diff_custom_days']].copy()
+    latest_20_data['date'] = latest_20_data['date'].dt.strftime('%Y-%m-%d')
+    latest_20_data['close_hongli'] = latest_20_data['close_hongli'].round(3)
+    latest_20_data['close_quanzhi'] = latest_20_data['close_quanzhi'].round(3)
+    
     # 计算涨跌幅
-    latest_10_data['hongli_change(%)'] = latest_10_data['close_hongli'].pct_change() * 100
-    latest_10_data['quanzhi_change(%)'] = latest_10_data['close_quanzhi'].pct_change() * 100
-    # 收益差转百分比
-    latest_10_data['diff_custom_days(%)'] = latest_10_data['diff_custom_days'] * 100
-    # 保留2位小数，空值替换为'-'
-    latest_10_data = latest_10_data.round({
-        'hongli_change(%)': 2,
-        'quanzhi_change(%)': 2,
-        'diff_custom_days(%)': 2
-    }).fillna('-')
+    latest_20_data['hongli_change(%)'] = latest_20_data['close_hongli'].pct_change() * 100
+    latest_20_data['quanzhi_change(%)'] = latest_20_data['close_quanzhi'].pct_change() * 100
+    latest_20_data['diff_custom_days(%)'] = latest_20_data['diff_custom_days'] * 100
     
-    # 构建最新20条数据的HTML表格
-    recent_table_html = "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse;'>"
-    # 表头
-    recent_table_html += """
-    <tr style="background-color: #f0f0f0;">
-        <th>日期</th>
-        <th>红利ETF收盘价</th>
-        <th>红利ETF涨跌幅(%)</th>
-        <th>中证全指收盘价</th>
-        <th>中证全指涨跌幅(%)</th>
-        <th>40日收益差(%)</th>
-    </tr>
+    # 填充第一行的涨跌幅为 '-'
+    latest_20_data = latest_20_data.round({'hongli_change(%)': 2, 'quanzhi_change(%)': 2, 'diff_custom_days(%)': 2})
+    latest_20_data = latest_20_data.fillna('-')
+    
+    # 构建历史数据表格
+    recent_table_html = """
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>红利ETF收盘价</th>
+                    <th>涨跌幅(%)</th>
+                    <th>中证全指收盘价</th>
+                    <th>涨跌幅(%)</th>
+                    <th>收益差(%)</th>
+                </tr>
+            </thead>
+            <tbody>
     """
-    # 数据行
-    for _, row in latest_10_data.iterrows():
+    for _, row in latest_20_data.iterrows():
+        h_color = "text-red" if row['hongli_change(%)'] != '-' and row['hongli_change(%)'] > 0 else "text-green" if row['hongli_change(%)'] != '-' and row['hongli_change(%)'] < 0 else ""
+        q_color = "text-red" if row['quanzhi_change(%)'] != '-' and row['quanzhi_change(%)'] > 0 else "text-green" if row['quanzhi_change(%)'] != '-' and row['quanzhi_change(%)'] < 0 else ""
+        d_color = "text-red" if row['diff_custom_days(%)'] != '-' and row['diff_custom_days(%)'] > 0 else "text-green" if row['diff_custom_days(%)'] != '-' and row['diff_custom_days(%)'] < 0 else ""
+        
         recent_table_html += f"""
-        <tr>
-            <td>{row['date']}</td>
-            <td>{row['close_hongli']}</td>
-            <td style="color: {'red' if row['hongli_change(%)'] != '-' and row['hongli_change(%)'] > 0 else 'green' if row['hongli_change(%)'] != '-' and row['hongli_change(%)'] < 0 else 'black'};">
-                {row['hongli_change(%)']}
-            </td>
-            <td>{row['close_quanzhi']}</td>
-            <td style="color: {'red' if row['quanzhi_change(%)'] != '-' and row['quanzhi_change(%)'] > 0 else 'green' if row['quanzhi_change(%)'] != '-' and row['quanzhi_change(%)'] < 0 else 'black'};">
-                {row['quanzhi_change(%)']}
-            </td>
-            <td style="color: {'red' if row['diff_custom_days(%)'] != '-' and row['diff_custom_days(%)'] > 0 else 'green' if row['diff_custom_days(%)'] != '-' and row['diff_custom_days(%)'] < 0 else 'black'};">
-                {row['diff_custom_days(%)']}
-            </td>
-        </tr>
+                <tr>
+                    <td>{row['date']}</td>
+                    <td>{row['close_hongli']}</td>
+                    <td class="{h_color}">{row['hongli_change(%)']}{'%' if row['hongli_change(%)'] != '-' else ''}</td>
+                    <td>{row['close_quanzhi']}</td>
+                    <td class="{q_color}">{row['quanzhi_change(%)']}{'%' if row['quanzhi_change(%)'] != '-' else ''}</td>
+                    <td class="{d_color}">{row['diff_custom_days(%)']}%</td>
+                </tr>
         """
-    recent_table_html += "</table>"
+    recent_table_html += "</tbody></table></div>"
     
+    # 构建三大指数HTML
+    indices_html = ""
+    if index_data_list:
+        indices_html = """
+        <div class="sub-card">
+            <div class="sub-header">🌍 今日三大指数行情</div>
+            <div class="summary-grid">
+        """
+        for item in index_data_list:
+            change_color = "text-red" if item['change'] > 0 else "text-green"
+            indices_html += f"""
+                <div class="summary-item">
+                    <div class="label">{item['name']}</div>
+                    <div class="value">{item['price']:.2f}</div>
+                    <div class="label {change_color}">{item['change']*100:+.2f}%</div>
+                </div>
+            """
+        indices_html += "</div><div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;'>"
+        for item in index_data_list:
+            if item['chart']:
+                indices_html += f"""
+                    <div style='text-align: center;'>
+                        <img src="{os.path.basename(item['chart'])}" style="width: 100%; border-radius: 8px;">
+                    </div>
+                """
+        indices_html += "</div></div>"
+
     # 2. 构建HTML片段
-    # 图片路径使用相对路径（文件名）
     img_filename = os.path.basename(chart_path)
     
+    # 信号灯颜色逻辑
+    status_class = "status-green" if "绿" in latest_data['status'] else "status-red" if "红" in latest_data['status'] else "status-yellow"
+    
     html_content = f"""
-    <div>
-        <h2>📊 红利ETF每日策略建议（{latest_data['date']}）</h2>
-        <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
-          <tr style="background-color: #f0f0f0;">
-            <th>指标</th>
-            <th>数值</th>
-          </tr>
-          <tr>
-            <td>40日收益差（红利-中证全指）</td>
-            <td><b style="color: {'red' if latest_data['diff']>0 else 'green'};">{latest_data['diff']*100:.2f}%</b></td>
-          </tr>
-          <tr>
-            <td>红利ETF最新收盘价</td>
-            <td>{latest_data['hongli_close']:.3f}</td>
-          </tr>
-          <tr>
-            <td>中证全指最新收盘价</td>
-            <td>{latest_data['quanzhi_close']:.3f}</td>
-          </tr>
-          <tr>
-            <td>信号灯状态</td>
-            <td><b>{latest_data['status']}</b></td>
-          </tr>
-          <tr>
-            <td>操作建议</td>
-            <td><b style="color: blue;">{latest_data['operation']}</b></td>
-          </tr>
-        </table>
-        <br>
-        <h4>📈 40日收益差趋势图：</h4>
-        <img src="{img_filename}" style="border: none; max-width: 100%; display: block;" />
-        <br>
-        <h4>📋 最新核心数据波动：</h4>
-        {recent_table_html}
-        <br><br>
-        <p>⚠️ 本建议仅为数据分析参考，不构成投资建议</p>
+    <div class="strategy-card">
+        <div class="card-header">
+            <span class="icon">📊</span> 红利ETF 每日策略建议 ({latest_data['date']})
+        </div>
+        
+        {indices_html}
+
+        <div class="table-container" style="margin-top: 25px;">
+            <table class="data-table" style="margin-bottom: 25px;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="width: 50%;">策略指标</th>
+                        <th>数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>40日收益差（红利-中证全指）</td>
+                        <td class="{'text-red' if latest_data['diff']>0 else 'text-green'}" style="font-weight: bold;">{latest_data['diff']*100:.2f}%</td>
+                    </tr>
+                    <tr>
+                        <td>红利ETF最新收盘价</td>
+                        <td>{latest_data['hongli_close']:.3f}</td>
+                    </tr>
+                    <tr>
+                        <td>中证全指最新收盘价</td>
+                        <td>{latest_data['quanzhi_close']:.3f}</td>
+                    </tr>
+                    <tr>
+                        <td>信号灯状态</td>
+                        <td><span class="badge {status_class}">{latest_data['status']}</span></td>
+                    </tr>
+                    <tr>
+                        <td>操作建议</td>
+                        <td><span class="badge status-blue" style="white-space: normal;">{latest_data['operation']}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sub-card">
+            <div class="sub-header">📈 40日收益差趋势图</div>
+            <img src="{img_filename}" class="strategy-img" />
+        </div>
+
+        <div class="sub-card">
+            <div class="sub-header">📋 最新核心数据波动 (最近20个交易日)</div>
+            {recent_table_html}
+        </div>
+        
+        <div class="footer-tip" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
+            ⚠️ 本建议仅为数据分析参考，不构成投资建议
+        </div>
     </div>
     """
     
-    # 保存到文件
     output_path = os.path.join(os.path.dirname(chart_path), 'strategy_fragment.html')
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
@@ -1023,8 +1115,26 @@ if __name__ == "__main__":
             recent_10d = recent_10d.round(2)  # 保留两位小数
             print(recent_10d.to_string(index=False))
 
-            # 7. 发送邮件/保存HTML
-            print("\n📧 开始生成策略内容...")
+            # 7. 获取三大指数行情并生成K线图
+            print("\n📈 正在生成三大指数K线图...")
+            major_indices = [
+                ("000001", "上证指数"),
+                ("399001", "深证成指"),
+                ("399006", "创业板指")
+            ]
+            index_data_list = []
+            for symbol, name in major_indices:
+                chart_path_idx, price_idx, change_idx = plot_index_kline(symbol, name, SAVE_DIR)
+                if chart_path_idx:
+                    index_data_list.append({
+                        "name": name,
+                        "price": price_idx,
+                        "change": change_idx,
+                        "chart": chart_path_idx
+                    })
+
+            # 8. 生成策略内容
+            print("\n📧 开始生成网页策略片段...")
             email_data = {
                 "date": latest_date,
                 "diff": latest_diff,
@@ -1034,7 +1144,7 @@ if __name__ == "__main__":
                 "operation": operation
             }
             # send_strategy_email(email_data, chart_path, merge_df)  # 新增merge_df参数
-            save_strategy_html_fragment(email_data, chart_path, merge_df)  # 保存HTML片段供网页展示
+            save_strategy_html_fragment(email_data, chart_path, merge_df, index_data_list)  # 保存HTML片段供网页展示
 
 
         except Exception as e:
