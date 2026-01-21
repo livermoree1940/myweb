@@ -48,33 +48,89 @@ def get_stock_data(symbol, name):
 # 定义获取指数数据的函数
 def get_index_data(symbol, name):
     try:
-        df = ak.stock_zh_index_daily(symbol=symbol)
-        # 检查数据列名是否存在
-        if 'date' in df.columns:
-            latest = df.iloc[-1]       # 最新数据
-            previous = df.iloc[-2]     # 昨日数据
-            
-            price = round(latest['close'], 2)
-            prev_price = round(previous['close'], 2)
+        # 尝试使用东方财富网接口获取指数数据
+        print(f"📈 尝试使用东方财富网接口获取{name}({symbol})数据...")
+        # 根据指数类型选择合适的symbol参数
+        if symbol.startswith('000'):
+            df_em = ak.stock_zh_index_spot_em(symbol="上证系列指数")
+        elif symbol.startswith('399'):
+            df_em = ak.stock_zh_index_spot_em(symbol="深证系列指数")
         else:
-            # 处理接口返回数据格式变化的情况
-            latest = df.iloc[-1]       # 最新数据
-            previous = df.iloc[-2]     # 昨日数据
+            df_em = ak.stock_zh_index_spot_em(symbol="中证系列指数")
+        
+        # 查找指定指数的数据
+        index_data = df_em[df_em['代码'] == symbol]
+        if not index_data.empty:
+            row = index_data.iloc[0]
+            price = round(float(row['最新价']), 2)
+            prev_price = round(float(row['昨收']), 2)
+            change = round(float(row['涨跌额']), 2)
+            change_pct = round(float(row['涨跌幅']), 2)
             
-            price = round(latest[df.columns[3]], 2)  # 假设close是第4列
-            prev_price = round(previous[df.columns[3]], 2)
-        
-        change = round(price - prev_price, 2)
-        change_pct = round((change / prev_price) * 100, 2)
-        
-        return {
-            'name': name,
-            'symbol': symbol,
-            'price': price,
-            'prev_price': prev_price,
-            'change': change,
-            'change_pct': change_pct
-        }
+            print(f"✅ 成功从东方财富网获取{name}({symbol})数据")
+            return {
+                'name': name,
+                'symbol': symbol,
+                'price': price,
+                'prev_price': prev_price,
+                'change': change,
+                'change_pct': change_pct
+            }
+        else:
+            print(f"⚠️ 东方财富网接口未找到{name}({symbol})数据，尝试使用新浪财经接口...")
+            # 东方财富网接口未找到数据，尝试使用新浪财经接口
+            df_sina = ak.stock_zh_index_spot_sina()
+            # 为新浪财经接口准备代码格式（添加sh或sz前缀）
+            sina_symbol = f"sh{symbol}" if symbol.startswith('000') else f"sz{symbol}"
+            index_data_sina = df_sina[df_sina['代码'] == sina_symbol]
+            
+            if not index_data_sina.empty:
+                row_sina = index_data_sina.iloc[0]
+                price = round(float(row_sina['最新价']), 2)
+                prev_price = round(float(row_sina['昨收']), 2)
+                change = round(float(row_sina['涨跌额']), 2)
+                change_pct = round(float(row_sina['涨跌幅']), 2)
+                
+                print(f"✅ 成功从新浪财经获取{name}({symbol})数据")
+                return {
+                    'name': name,
+                    'symbol': symbol,
+                    'price': price,
+                    'prev_price': prev_price,
+                    'change': change,
+                    'change_pct': change_pct
+                }
+            else:
+                print(f"⚠️ 新浪财经接口也未找到{name}({symbol})数据，尝试使用历史数据接口...")
+                # 新浪财经接口也未找到数据，尝试使用历史数据接口
+                df_daily = ak.stock_zh_index_daily(symbol=symbol)
+                # 检查数据列名是否存在
+                if 'date' in df_daily.columns:
+                    latest = df_daily.iloc[-1]       # 最新数据
+                    previous = df_daily.iloc[-2]     # 昨日数据
+                    
+                    price = round(latest['close'], 2)
+                    prev_price = round(previous['close'], 2)
+                else:
+                    # 处理接口返回数据格式变化的情况
+                    latest = df_daily.iloc[-1]       # 最新数据
+                    previous = df_daily.iloc[-2]     # 昨日数据
+                    
+                    price = round(latest[df_daily.columns[3]], 2)  # 假设close是第4列
+                    prev_price = round(previous[df_daily.columns[3]], 2)
+                
+                change = round(price - prev_price, 2)
+                change_pct = round((change / prev_price) * 100, 2)
+                
+                print(f"✅ 成功从历史数据接口获取{name}({symbol})数据")
+                return {
+                    'name': name,
+                    'symbol': symbol,
+                    'price': price,
+                    'prev_price': prev_price,
+                    'change': change,
+                    'change_pct': change_pct
+                }
     except Exception as e:
         print(f"❌ 获取{name}({symbol})数据失败：{e}，使用默认数据")
         # 使用模拟数据
