@@ -1,0 +1,193 @@
+{
+  "total_stocks": 347,
+  "total_concepts": 700,
+  "unique_concepts": 183,
+  "hot_concepts": [
+    {
+      "rank": 1,
+      "concept": "存储芯片",
+      "count": 40,
+      "percentage": 11.53
+    },
+    {
+      "rank": 2,
+      "concept": "商业航天",
+      "count": 29,
+      "percentage": 8.36
+    },
+    {
+      "rank": 3,
+      "concept": "小金属概念",
+      "count": 20,
+      "percentage": 5.76
+    },
+    {
+      "rank": 4,
+      "concept": "卫星导航",
+      "count": 18,
+      "percentage": 5.19
+    },
+    {
+      "rank": 5,
+      "concept": "人形机器人",
+      "count": 18,
+      "percentage": 5.19
+    },
+    {
+      "rank": 6,
+      "concept": "AI应用",
+      "count": 18,
+      "percentage": 5.19
+    },
+    {
+      "rank": 7,
+      "concept": "小红书概念",
+      "count": 17,
+      "percentage": 4.9
+    },
+    {
+      "rank": 8,
+      "concept": "金属铅",
+      "count": 16,
+      "percentage": 4.61
+    },
+    {
+      "rank": 9,
+      "concept": "金属铜",
+      "count": 16,
+      "percentage": 4.61
+    },
+    {
+      "rank": 10,
+      "concept": "快手概念",
+      "count": 15,
+      "percentage": 4.32
+    },
+    {
+      "rank": 11,
+      "concept": "国家大基金持股",
+      "count": 15,
+      "percentage": 4.32
+    },
+    {
+      "rank": 12,
+      "concept": "柔性直流输电",
+      "count": 14,
+      "percentage": 4.03
+    },
+    {
+      "rank": 13,
+      "concept": "黄金概念",
+      "count": 14,
+      "percentage": 4.03
+    },
+    {
+      "rank": 14,
+      "concept": "金属锌",
+      "count": 13,
+      "percentage": 3.75
+    },
+    {
+      "rank": 15,
+      "concept": "AI语料",
+      "count": 13,
+      "percentage": 3.75
+    },
+    {
+      "rank": 16,
+      "concept": "Sora概念(文生视频)",
+      "count": 11,
+      "percentage": 3.17
+    },
+    {
+      "rank": 17,
+      "concept": "抽水蓄能",
+      "count": 10,
+      "percentage": 2.88
+    },
+    {
+      "rank": 18,
+      "concept": "先进封装",
+      "count": 10,
+      "percentage": 2.88
+    },
+    {
+      "rank": 19,
+      "concept": "中芯国际概念",
+      "count": 10,
+      "percentage": 2.88
+    },
+    {
+      "rank": 20,
+      "concept": "汽车芯片",
+      "count": 9,
+      "percentage": 2.59
+    },
+    {
+      "rank": 21,
+      "concept": "芯片概念",
+      "count": 8,
+      "percentage": 2.31
+    },
+    {
+      "rank": 22,
+      "concept": "稀土永磁",
+      "count": 8,
+      "percentage": 2.31
+    },
+    {
+      "rank": 23,
+      "concept": "特高压",
+      "count": 7,
+      "percentage": 2.02
+    },
+    {
+      "rank": 24,
+      "concept": "智能电网",
+      "count": 7,
+      "percentage": 2.02
+    },
+    {
+      "rank": 25,
+      "concept": "MCU芯片",
+      "count": 6,
+      "percentage": 1.73
+    },
+    {
+      "rank": 26,
+      "concept": "可控核聚变",
+      "count": 6,
+      "percentage": 1.73
+    },
+    {
+      "rank": 27,
+      "concept": "啤酒概念",
+      "count": 6,
+      "percentage": 1.73
+    },
+    {
+      "rank": 28,
+      "concept": "长安汽车概念",
+      "count": 6,
+      "percentage": 1.73
+    },
+    {
+      "rank": 29,
+      "concept": "太赫兹",
+      "count": 5,
+      "percentage": 1.44
+    },
+    {
+      "rank": 30,
+      "concept": "环氧丙烷",
+      "count": 5,
+      "percentage": 1.44
+    }
+  ],
+  "concept_distribution": {
+    "1-5次": 155,
+    "6-10次": 12,
+    "11-20次": 14,
+    "20次以上": 2
+  }
+}

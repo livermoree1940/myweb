@@ -1,0 +1,900 @@
+{
+  "status_code": 0,
+  "data": {
+    "stock_list": [
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "002156",
+        "rate": "170842.0",
+        "rise_and_fall": 9.998,
+        "name": "通富微电",
+        "hot_rank_chg": 0,
+        "display_order": 1,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "国家大基金持股",
+            "存储芯片"
+          ],
+          "popularity_tag": "热搜"
+        },
+        "search_cnt": 184880,
+        "order": 7
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600879",
+        "rate": "104721.0",
+        "rise_and_fall": 4.0289,
+        "name": "航天电子",
+        "hot_rank_chg": 0,
+        "display_order": 2,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "卫星导航",
+            "商业航天"
+          ]
+        },
+        "search_cnt": 139225,
+        "order": 18
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600584",
+        "rate": "73721.0",
+        "rise_and_fall": 4.4453,
+        "name": "长电科技",
+        "hot_rank_chg": 0,
+        "display_order": 3,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "国家大基金持股",
+            "汽车芯片"
+          ]
+        },
+        "search_cnt": 78765,
+        "order": 43
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600118",
+        "rate": "73036.0",
+        "rise_and_fall": 0.0306,
+        "name": "中国卫星",
+        "hot_rank_chg": 0,
+        "display_order": 4,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "商业航天",
+            "卫星导航"
+          ]
+        },
+        "search_cnt": 88707,
+        "order": 44
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000506",
+        "rate": "65257.0",
+        "rise_and_fall": 9.4479,
+        "name": "招金黄金",
+        "hot_rank_chg": 1,
+        "display_order": 5,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "黄金概念",
+            "金属铜"
+          ]
+        },
+        "search_cnt": 68446,
+        "order": 53
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000949",
+        "rate": "64794.0",
+        "rise_and_fall": -1.4745,
+        "name": "新乡化纤",
+        "hot_rank_chg": -1,
+        "display_order": 6,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "新疆振兴",
+            "国企改革"
+          ]
+        },
+        "search_cnt": 63985,
+        "order": 55
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000657",
+        "rate": "43778.0",
+        "rise_and_fall": 9.1317,
+        "name": "中钨高新",
+        "hot_rank_chg": 0,
+        "display_order": 7,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "小金属概念",
+            "金属铜"
+          ]
+        },
+        "search_cnt": 54513,
+        "order": 89
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600988",
+        "rate": "38996.0",
+        "rise_and_fall": 4.3764,
+        "name": "赤峰黄金",
+        "hot_rank_chg": 1,
+        "display_order": 8,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铅",
+            "黄金概念"
+          ]
+        },
+        "search_cnt": 38585,
+        "order": 100
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600489",
+        "rate": "27145.0",
+        "rise_and_fall": 4.5718,
+        "name": "中金黄金",
+        "hot_rank_chg": 5,
+        "display_order": 9,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "黄金概念",
+            "金属铜"
+          ]
+        },
+        "search_cnt": 28828,
+        "order": 146
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600111",
+        "rate": "26796.0",
+        "rise_and_fall": 0.8263,
+        "name": "北方稀土",
+        "hot_rank_chg": 0,
+        "display_order": 10,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "稀土永磁",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 31019,
+        "order": 153
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600547",
+        "rate": "26102.0",
+        "rise_and_fall": 3.931,
+        "name": "山东黄金",
+        "hot_rank_chg": 6,
+        "display_order": 11,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "黄金概念",
+            "2025三季报预增"
+          ]
+        },
+        "search_cnt": 27036,
+        "order": 157
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "603061",
+        "rate": "24645.0",
+        "rise_and_fall": -1.3901,
+        "name": "金海通",
+        "hot_rank_chg": -4,
+        "display_order": 12,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "2025年报预增",
+            "芯片概念"
+          ]
+        },
+        "search_cnt": 24694,
+        "order": 172
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000975",
+        "rate": "24123.0",
+        "rise_and_fall": 4.6412,
+        "name": "山金国际",
+        "hot_rank_chg": 0,
+        "display_order": 13,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铅",
+            "金属锌"
+          ]
+        },
+        "search_cnt": 24977,
+        "order": 178
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000426",
+        "rate": "23252.0",
+        "rise_and_fall": 1.7585,
+        "name": "兴业银锡",
+        "hot_rank_chg": -2,
+        "display_order": 14,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铅",
+            "金属锌"
+          ]
+        },
+        "search_cnt": 24118,
+        "order": 192
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600549",
+        "rate": "23228.0",
+        "rise_and_fall": 5.2904,
+        "name": "厦门钨业",
+        "hot_rank_chg": 0,
+        "display_order": 15,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "稀土永磁",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 27394,
+        "order": 193
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "300139",
+        "rate": "22768.0",
+        "rise_and_fall": 4.2247,
+        "name": "晓程科技",
+        "hot_rank_chg": 3,
+        "display_order": 16,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "黄金概念",
+            "民爆概念"
+          ]
+        },
+        "search_cnt": 23991,
+        "order": 198
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "300604",
+        "rate": "18711.0",
+        "rise_and_fall": 0.8059,
+        "name": "长川科技",
+        "hot_rank_chg": -6,
+        "display_order": 17,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "存储芯片",
+            "国家大基金持股"
+          ]
+        },
+        "search_cnt": 20527,
+        "order": 249
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "002155",
+        "rate": "18171.0",
+        "rise_and_fall": null,
+        "name": "湖南黄金",
+        "hot_rank_chg": 5,
+        "display_order": 18,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铅",
+            "金属锌"
+          ]
+        },
+        "search_cnt": 21473,
+        "order": 256
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "605376",
+        "rate": "14077.0",
+        "rise_and_fall": -2.8653,
+        "name": "博迁新材",
+        "hot_rank_chg": -3,
+        "display_order": 19,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "3D打印",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 12970,
+        "order": 338
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "002371",
+        "rate": "12515.0",
+        "rise_and_fall": -0.0622,
+        "name": "北方华创",
+        "hot_rank_chg": -2,
+        "display_order": 20,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "国家大基金持股",
+            "存储芯片"
+          ]
+        },
+        "search_cnt": 11963,
+        "order": 386
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "603005",
+        "rate": "11473.0",
+        "rise_and_fall": 2.19,
+        "name": "晶方科技",
+        "hot_rank_chg": 4,
+        "display_order": 21,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "先进封装",
+            "汽车芯片"
+          ]
+        },
+        "search_cnt": 11489,
+        "order": 412
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000831",
+        "rate": "11282.0",
+        "rise_and_fall": 0.37,
+        "name": "中国稀土",
+        "hot_rank_chg": 2,
+        "display_order": 22,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "稀土永磁",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 11946,
+        "order": 420
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688352",
+        "rate": "11089.0",
+        "rise_and_fall": -3.9568,
+        "name": "颀中科技",
+        "hot_rank_chg": -1,
+        "display_order": 23,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "先进封装",
+            "MCU芯片"
+          ]
+        },
+        "search_cnt": 10758,
+        "order": 427
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000960",
+        "rate": "10431.0",
+        "rise_and_fall": 1.3641,
+        "name": "锡业股份",
+        "hot_rank_chg": 2,
+        "display_order": 24,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铅",
+            "金属锌"
+          ]
+        },
+        "search_cnt": 10881,
+        "order": 448
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "002545",
+        "rate": "9614.0",
+        "rise_and_fall": 8.3822,
+        "name": "东方铁塔",
+        "display_order": 25,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "2025三季报预增",
+            "化肥"
+          ]
+        },
+        "search_cnt": 9015,
+        "order": 491
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600392",
+        "rate": "8040.0",
+        "rise_and_fall": 1.1735,
+        "name": "盛和资源",
+        "hot_rank_chg": 3,
+        "display_order": 26,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "稀土永磁",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 9227,
+        "order": 587
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688012",
+        "rate": "7905.0",
+        "rise_and_fall": 0.6176,
+        "name": "中微公司",
+        "hot_rank_chg": 0,
+        "display_order": 27,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "国家大基金持股",
+            "存储芯片"
+          ]
+        },
+        "search_cnt": 7856,
+        "order": 596
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000962",
+        "rate": "5766.0",
+        "rise_and_fall": 2.5119,
+        "name": "东方钽业",
+        "hot_rank_chg": 9,
+        "display_order": 28,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "超导概念",
+            "可控核聚变"
+          ]
+        },
+        "search_cnt": 5875,
+        "order": 810
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600456",
+        "rate": "5380.0",
+        "rise_and_fall": 0.2062,
+        "name": "宝钛股份",
+        "hot_rank_chg": 6,
+        "display_order": 29,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "大飞机",
+            "航空发动机"
+          ]
+        },
+        "search_cnt": 5201,
+        "order": 867
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "000893",
+        "rate": "5272.0",
+        "rise_and_fall": 5.2746,
+        "name": "亚钾国际",
+        "display_order": 30,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "化肥",
+            "供销社"
+          ]
+        },
+        "search_cnt": 4502,
+        "order": 884
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600259",
+        "rate": "5244.0",
+        "rise_and_fall": 3.4862,
+        "name": "中稀有色",
+        "hot_rank_chg": 1,
+        "display_order": 31,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "稀土永磁",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 5210,
+        "order": 887
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "002738",
+        "rate": "4849.0",
+        "rise_and_fall": 8.0062,
+        "name": "中矿资源",
+        "hot_rank_chg": -1,
+        "display_order": 32,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铜",
+            "小金属概念"
+          ]
+        },
+        "search_cnt": 5048,
+        "order": 957
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "600301",
+        "rate": "3956.0",
+        "rise_and_fall": 2.7108,
+        "name": "华锡有色",
+        "hot_rank_chg": 6,
+        "display_order": 33,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "金属铅",
+            "金属锌"
+          ]
+        },
+        "search_cnt": 4283,
+        "order": 1138
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688072",
+        "rate": "3697.0",
+        "rise_and_fall": 0.6324,
+        "name": "拓荆科技",
+        "hot_rank_chg": 2,
+        "display_order": 34,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "国家大基金持股",
+            "存储芯片"
+          ]
+        },
+        "search_cnt": 3761,
+        "order": 1202
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688037",
+        "rate": "3589.0",
+        "rise_and_fall": -2.0599,
+        "name": "芯源微",
+        "hot_rank_chg": -1,
+        "display_order": 35,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "光刻胶",
+            "中芯国际概念"
+          ]
+        },
+        "search_cnt": 3482,
+        "order": 1238
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688409",
+        "rate": "3538.0",
+        "rise_and_fall": -0.6384,
+        "name": "富创精密",
+        "hot_rank_chg": 2,
+        "display_order": 36,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "光刻机",
+            "芯片概念"
+          ]
+        },
+        "search_cnt": 3058,
+        "order": 1252
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688082",
+        "rate": "2611.0",
+        "rise_and_fall": 0.3987,
+        "name": "盛美上海",
+        "hot_rank_chg": 6,
+        "display_order": 37,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "中芯国际概念",
+            "存储芯片"
+          ]
+        },
+        "search_cnt": 2463,
+        "order": 1588
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688361",
+        "rate": "2522.0",
+        "rise_and_fall": -4.8638,
+        "name": "中科飞测",
+        "hot_rank_chg": 4,
+        "display_order": 38,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "中芯国际概念",
+            "国家大基金持股"
+          ]
+        },
+        "search_cnt": 2388,
+        "order": 1635
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688120",
+        "rate": "2487.0",
+        "rise_and_fall": 0.544,
+        "name": "华海清科",
+        "hot_rank_chg": 2,
+        "display_order": 39,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "存储芯片",
+            "芯片概念"
+          ]
+        },
+        "search_cnt": 2379,
+        "order": 1658
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688147",
+        "rate": "2378.0",
+        "rise_and_fall": -1.6371,
+        "name": "微导纳米",
+        "hot_rank_chg": 4,
+        "display_order": 40,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "中芯国际概念",
+            "存储芯片"
+          ]
+        },
+        "search_cnt": 2220,
+        "order": 1723
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688372",
+        "rate": "1801.0",
+        "rise_and_fall": 0.9709,
+        "name": "伟测科技",
+        "hot_rank_chg": 5,
+        "display_order": 41,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "存储芯片",
+            "先进封装"
+          ]
+        },
+        "search_cnt": 1740,
+        "order": 2075
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688200",
+        "rate": "1566.0",
+        "rise_and_fall": 6.1354,
+        "name": "华峰测控",
+        "hot_rank_chg": 7,
+        "display_order": 42,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "第三代半导体",
+            "芯片概念"
+          ]
+        },
+        "search_cnt": 1476,
+        "order": 2291
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688652",
+        "rate": "1474.0",
+        "rise_and_fall": -0.3632,
+        "name": "京仪装备",
+        "hot_rank_chg": 4,
+        "display_order": 43,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "中芯国际概念",
+            "存储芯片"
+          ]
+        },
+        "search_cnt": 1364,
+        "order": 2398
+      },
+      {
+        "market": 33,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "301026",
+        "rate": "1306.0",
+        "rise_and_fall": 4.6267,
+        "name": "浩通科技",
+        "hot_rank_chg": 7,
+        "display_order": 44,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "小金属概念",
+            "黄金概念"
+          ]
+        },
+        "search_cnt": 1046,
+        "order": 2593
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688605",
+        "rate": "1053.0",
+        "rise_and_fall": 0.7533,
+        "name": "先锋精科",
+        "hot_rank_chg": 5,
+        "display_order": 45,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "光刻机",
+            "中芯国际概念"
+          ]
+        },
+        "search_cnt": 956,
+        "order": 2964
+      },
+      {
+        "market": 151,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "920914",
+        "rate": "858.0",
+        "rise_and_fall": 1.0811,
+        "name": "远航精密",
+        "hot_rank_chg": 6,
+        "display_order": 46,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "融资融券",
+            "宁德时代概念"
+          ]
+        },
+        "search_cnt": 952,
+        "order": 3293
+      },
+      {
+        "market": 17,
+        "update_time": "2026-01-21 09:41:15",
+        "code": "688282",
+        "rate": "758.0",
+        "rise_and_fall": -1.8201,
+        "name": "理工导航",
+        "hot_rank_chg": 6,
+        "display_order": 47,
+        "topic": null,
+        "tag": {
+          "concept_tag": [
+            "商业航天",
+            "卫星导航"
+          ]
+        },
+        "search_cnt": 787,
+        "order": 3510
+      }
+    ]
+  },
+  "status_msg": "success"
+}
