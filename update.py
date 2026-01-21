@@ -164,8 +164,7 @@ def get_index_data(symbol, name):
 # 定义获取沪深300现货和期货数据的函数
 def get_hs300_data():
     try:
-        # 配置代理（根据你的环境 7897 端口）
-        proxies = {"http": "http://127.0.0.1:7897", "https": "http://127.0.0.1:7897"}
+        # 移除代理设置，直接连接
         headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://gushitong.baidu.com/"}
         
         def get_baidu_kline(code, is_futures=True):
@@ -173,7 +172,8 @@ def get_hs300_data():
             f_type = "true" if is_futures else "false"
             url = f"https://finance.pae.baidu.com/selfselect/getstockquotation?all=1&code={code}&isIndex={not is_futures}&isBk=false&isBlock=false&isFutures={f_type}&isStock=false&newFormat=1&ktype=1&market_type=ab&group=quotation_futures_kline&finClientType=pc"
             
-            response = requests.get(url, headers=headers, proxies=proxies, timeout=10)
+            # 移除proxies参数，直接连接
+            response = requests.get(url, headers=headers, timeout=10)
             res_json = response.json()
             raw_str = res_json['Result']['newMarketData']['marketData']
             keys = res_json['Result']['newMarketData']['keys']
