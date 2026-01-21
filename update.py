@@ -161,8 +161,8 @@ def get_index_data(symbol, name):
                 'change_pct': 0
             }
 
-# 定义获取沪深300现货和期货数据的函数
-def get_hs300_data():
+# 定义获取指数现货和期货数据的通用函数
+def get_index_futures_data(spot_code, future_code, index_name):
     try:
         # 移除代理设置，直接连接
         headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://gushitong.baidu.com/"}
@@ -185,9 +185,9 @@ def get_hs300_data():
             
             return df[['time', 'close']]
         
-        # 获取沪深300现货和期货数据
-        df_spot = get_baidu_kline("000300", is_futures=False)
-        df_future = get_baidu_kline("IF888", is_futures=True)
+        # 获取现货和期货数据
+        df_spot = get_baidu_kline(spot_code, is_futures=False)
+        df_future = get_baidu_kline(future_code, is_futures=True)
         
         # 合并数据并计算基差
         df_basis = pd.merge(df_future, df_spot, on='time', suffixes=('_fut', '_spot'))
@@ -202,11 +202,19 @@ def get_hs300_data():
         
         return df_basis
     except Exception as e:
-        print(f"获取沪深300数据时出错: {e}")
+        print(f"获取{index_name}数据时出错: {e}")
         return None
 
-# 定义创建沪深300基差交互式图表的函数
-def create_hs300_chart(df_basis):
+# 定义获取沪深300现货和期货数据的函数
+def get_hs300_data():
+    return get_index_futures_data("000300", "IF888", "沪深300")
+
+# 定义获取中证1000现货和期货数据的函数
+def get_zz1000_data():
+    return get_index_futures_data("000852", "IC888", "中证1000")
+
+# 定义创建基差交互式图表的通用函数
+def create_basis_chart(df_basis, index_name, output_file):
     try:
         if df_basis is None or len(df_basis) < 20:
             return None
@@ -216,7 +224,7 @@ def create_hs300_chart(df_basis):
         
         # 设置图表标题和布局
         fig.update_layout(
-            title='沪深300股指期货基差分析 (含MA60及布林带)',
+            title=f'{index_name}股指期货基差分析 (含MA60及布林带)',
             xaxis_title='时间',
             yaxis_title='基差',
             width=1000,
@@ -229,7 +237,7 @@ def create_hs300_chart(df_basis):
         fig.add_trace(go.Scatter(
             x=df_basis['time'],
             y=df_basis['basis'],
-            name='沪深300基差 (IF-现货)',
+            name=f'{index_name}基差',
             line=dict(color='#5386E4', width=1.5),
             opacity=0.9
         ))
@@ -293,14 +301,22 @@ def create_hs300_chart(df_basis):
         )
         
         # 保存为可嵌入的HTML片段
-        fig.write_html("hs300_basis_embed.html", 
+        fig.write_html(output_file, 
                        include_plotlyjs='cdn',
                        full_html=False)
         
         return True
     except Exception as e:
-        print(f"创建沪深300图表时出错: {e}")
+        print(f"创建{index_name}图表时出错: {e}")
         return False
+
+# 定义创建沪深300基差交互式图表的函数
+def create_hs300_chart(df_basis):
+    return create_basis_chart(df_basis, "沪深300", "hs300_basis_embed.html")
+
+# 定义创建中证1000基差交互式图表的函数
+def create_zz1000_chart(df_basis):
+    return create_basis_chart(df_basis, "中证1000", "zz1000_basis_embed.html")
 
 # 1. 获取长江电力数据
 stock_data = get_stock_data("600900", "长江电力")
@@ -334,12 +350,31 @@ except Exception as e:
     print(f"处理沪深300数据时出错: {e}")
     has_hs300_chart = False
 
-# 5. 写 json 供前端（可选）
+# 5. 获取中证1000基差数据并创建图表
+has_zz1000_chart = False
+try:
+    print("正在获取中证1000基差数据...")
+    df_zz1000 = get_zz1000_data()
+    if df_zz1000 is not None:
+        print("正在创建中证1000基差图表...")
+        has_zz1000_chart = create_zz1000_chart(df_zz1000)
+        if has_zz1000_chart:
+            print("中证1000基差图表创建成功！")
+        else:
+            print("中证1000基差图表创建失败！")
+    else:
+        print("未能获取中证1000数据！")
+except Exception as e:
+    print(f"处理中证1000数据时出错: {e}")
+    has_zz1000_chart = False
+
+# 6. 写 json 供前端（可选）
 data = {
     'date': date,
     'stock': stock_data,
     'indices': indices,
-    'has_hs300_chart': has_hs300_chart
+    'has_hs300_chart': has_hs300_chart,
+    'has_zz1000_chart': has_zz1000_chart
 }
 with open('price.json','w',encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False)
@@ -369,6 +404,18 @@ if has_hs300_chart:
         has_hs300_chart = False
 else:
     hs300_chart_html = ""
+
+# 读取中证1000基差图表的HTML片段
+if has_zz1000_chart:
+    try:
+        with open('zz1000_basis_embed.html', 'r', encoding='utf-8') as f:
+            zz1000_chart_html = f.read()
+    except Exception as e:
+        print(f"读取中证1000图表HTML时出错: {e}")
+        zz1000_chart_html = ""
+        has_zz1000_chart = False
+else:
+    zz1000_chart_html = ""
 
 html = jinja2.Template('''
 <!doctype html>
@@ -636,6 +683,15 @@ html = jinja2.Template('''
         </div>
         {% endif %}
         
+        {% if has_zz1000_chart %}
+        <div class="card">
+            <h2>中证1000股指期货基差分析</h2>
+            <div class="chart-container">
+                {{ zz1000_chart_html | safe }}
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="card">
             {% if strategy_html %}
                 {{ strategy_html }}
@@ -655,7 +711,7 @@ html = jinja2.Template('''
     </div>
 </body>
 </html>
-''').render(date=date, stock=stock_data, indices=indices, has_hs300_chart=has_hs300_chart, hs300_chart_html=hs300_chart_html, latest_png=latest_png, strategy_html=strategy_html)
+''').render(date=date, stock=stock_data, indices=indices, has_hs300_chart=has_hs300_chart, hs300_chart_html=hs300_chart_html, has_zz1000_chart=has_zz1000_chart, zz1000_chart_html=zz1000_chart_html, latest_png=latest_png, strategy_html=strategy_html)
 
 with open('index.html','w',encoding='utf-8') as f:
     f.write(html)
