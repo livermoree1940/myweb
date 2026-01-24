@@ -14,7 +14,6 @@ from config import (
     STOCK_CONFIG,
     INDEX_CONFIG,
     FUTURES_CONFIG,
-    DEFAULT_INDEX_DATA,
     FILE_PATHS,
     TECHNICAL_INDICATORS,
     CHART_CONFIG,
@@ -29,7 +28,7 @@ def calculate_price_change(current_price: float, previous_price: float) -> Dict[
     return {'change': change, 'change_pct': change_pct}
 
 
-def get_stock_data(symbol: str, name: str) -> Dict[str, Any]:
+def get_stock_data(symbol: str, name: str) -> Optional[Dict[str, Any]]:
     """获取股票数据
     
     Args:
@@ -37,7 +36,7 @@ def get_stock_data(symbol: str, name: str) -> Dict[str, Any]:
         name: 股票名称
         
     Returns:
-        包含股票信息的字典
+        包含股票信息的字典，如果获取失败则返回None
     """
     try:
         df = ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="")
@@ -56,25 +55,11 @@ def get_stock_data(symbol: str, name: str) -> Dict[str, Any]:
             **change_data
         }
     except (KeyError, IndexError, ValueError) as e:
-        print(f"获取{name}({symbol})数据失败：{e}，使用默认数据")
-        return {
-            'name': name,
-            'symbol': symbol,
-            'price': 27.64,
-            'prev_price': 27.71,
-            'change': -0.07,
-            'change_pct': -0.25
-        }
+        print(f"获取{name}({symbol})数据失败：{e}")
+        return None
     except Exception as e:
-        print(f"获取{name}({symbol})时发生未知错误：{e}，使用默认数据")
-        return {
-            'name': name,
-            'symbol': symbol,
-            'price': 27.64,
-            'prev_price': 27.71,
-            'change': -0.07,
-            'change_pct': -0.25
-        }
+        print(f"获取{name}({symbol})时发生未知错误：{e}")
+        return None
 
 
 def get_index_data_from_eastmoney(symbol: str, name: str) -> Optional[Dict[str, Any]]:
@@ -168,29 +153,10 @@ def get_index_data_from_history(symbol: str, name: str) -> Optional[Dict[str, An
     return None
 
 
-def get_default_index_data(symbol: str, name: str) -> Dict[str, Any]:
-    """获取默认指数数据"""
-    if symbol in DEFAULT_INDEX_DATA:
-        data = DEFAULT_INDEX_DATA[symbol]
-        return {
-            'name': name,
-            'symbol': symbol,
-            'price': data['price'],
-            'prev_price': data['prev_price'],
-            'change': data['change'],
-            'change_pct': data['change_pct']
-        }
-    return {
-        'name': name,
-        'symbol': symbol,
-        'price': 0,
-        'prev_price': 0,
-        'change': 0,
-        'change_pct': 0
-    }
 
 
-def get_index_data(symbol: str, name: str) -> Dict[str, Any]:
+
+def get_index_data(symbol: str, name: str) -> Optional[Dict[str, Any]]:
     """获取指数数据，尝试多个数据源
     
     Args:
@@ -198,7 +164,7 @@ def get_index_data(symbol: str, name: str) -> Dict[str, Any]:
         name: 指数名称
         
     Returns:
-        包含指数信息的字典
+        包含指数信息的字典，如果获取失败则返回None
     """
     print(f"尝试获取{name}({symbol})数据...")
     
@@ -214,8 +180,8 @@ def get_index_data(symbol: str, name: str) -> Dict[str, Any]:
     if data:
         return data
     
-    print(f"所有数据源均失败，使用默认数据")
-    return get_default_index_data(symbol, name)
+    print(f"所有数据源均失败，返回None")
+    return None
 
 
 def get_baidu_kline_data(code: str, is_futures: bool) -> Optional[pd.DataFrame]:
@@ -786,102 +752,8 @@ def create_stock_kline_chart(symbol: str, name: str, days: int = 180) -> str:
             full_html=False
         )
     except Exception as e:
-        print(f"创建{name}日K线图失败: {e}，使用默认数据生成图表")
-        # 使用默认数据生成基本图表
-        try:
-            # 生成最近30天的模拟数据
-            import datetime
-            dates = []
-            opens = []
-            highs = []
-            lows = []
-            closes = []
-            volumes = []
-            
-            base_price = 27.5
-            for i in range(30, 0, -1):
-                date = (datetime.datetime.now() - datetime.timedelta(days=i)).strftime('%Y-%m-%d')
-                dates.append(date)
-                
-                # 生成随机价格波动
-                change = (np.random.random() - 0.5) * 0.5
-                close = base_price + change
-                open_p = close - (np.random.random() - 0.5) * 0.3
-                high = max(open_p, close) + np.random.random() * 0.2
-                low = min(open_p, close) - np.random.random() * 0.2
-                
-                opens.append(round(open_p, 2))
-                highs.append(round(high, 2))
-                lows.append(round(low, 2))
-                closes.append(round(close, 2))
-                volumes.append(int(np.random.random() * 10000000) + 5000000)
-                
-                base_price = close
-            
-            # 创建K线图
-            fig = go.Figure(data=[go.Candlestick(
-                x=dates,
-                open=opens,
-                high=highs,
-                low=lows,
-                close=closes,
-                increasing_line_color='#27ae60',
-                decreasing_line_color='#e74c3c'
-            )])
-            
-            # 更新布局
-            fig.update_layout(
-                title=f'{name}({symbol}) 日K线图（模拟数据）',
-                xaxis_title='日期',
-                yaxis_title='价格',
-                width=1000,
-                height=600,
-                template='plotly_white',
-                hovermode='x unified'
-            )
-            
-            # 添加成交量
-            fig.add_trace(go.Bar(
-                x=dates,
-                y=volumes,
-                name='成交量',
-                yaxis='y2',
-                marker_color=['#27ae60' if closes[i] >= opens[i] else '#e74c3c' for i in range(len(closes))],
-                opacity=0.6
-            ))
-            
-            # 更新Y轴
-            fig.update_layout(
-                yaxis2=dict(
-                    title='成交量',
-                    overlaying='y',
-                    side='right',
-                    showgrid=False
-                )
-            )
-            
-            # 更新X轴
-            fig.update_xaxes(
-                rangeslider_visible=False,
-                rangeselector=dict(
-                    buttons=list([
-                        dict(count=30, label="30天", step="day", stepmode="backward"),
-                        dict(count=60, label="60天", step="day", stepmode="backward"),
-                        dict(count=90, label="90天", step="day", stepmode="backward"),
-                        dict(count=180, label="180天", step="day", stepmode="backward"),
-                        dict(step="all")
-                    ])
-                )
-            )
-            
-            # 转换为HTML
-            return fig.to_html(
-                include_plotlyjs='cdn',
-                full_html=False
-            )
-        except Exception as e2:
-            print(f"生成模拟数据图表也失败: {e2}")
-            return ""
+        print(f"创建{name}日K线图失败: {e}")
+        return ""
 
 
 def main():
@@ -893,16 +765,34 @@ def main():
     stock_config = STOCK_CONFIG['main_stock']
     stock_data = get_stock_data(stock_config['symbol'], stock_config['name'])
     
+    # 检查关键数据是否获取成功
+    if not stock_data:
+        print("❌ 核心股票数据获取失败，程序终止！")
+        return False
+    
     # 获取最近20个交易日数据
     recent_trading_data = get_recent_trading_days_data(stock_config['symbol'], stock_config['name'])
     
     # 创建长江电力日K线图
     stock_kline_html = create_stock_kline_chart(stock_config['symbol'], stock_config['name'])
     
-    indices = [get_index_data(idx['symbol'], idx['name']) for idx in INDEX_CONFIG]
+    # 获取指数数据
+    indices = []
+    for idx in INDEX_CONFIG:
+        idx_data = get_index_data(idx['symbol'], idx['name'])
+        if not idx_data:
+            print(f"❌ 指数 {idx['name']} 数据获取失败，程序终止！")
+            return False
+        indices.append(idx_data)
     
+    # 获取基差图表
     has_hs300_chart, hs300_chart_html = process_index_futures('hs300')
     has_zz1000_chart, zz1000_chart_html = process_index_futures('zz1000')
+    
+    # 检查基差图表是否获取成功
+    if not has_hs300_chart or not has_zz1000_chart:
+        print("❌ 基差图表获取失败，程序终止！")
+        return False
     
     data = {
         'date': date,
@@ -940,9 +830,15 @@ def main():
     if html:
         save_html(html, FILE_PATHS['index_html'])
         print(f"✅ 数据更新完成！HTML文件已保存到 {FILE_PATHS['index_html']}")
+        return True
     else:
         print("❌ HTML生成失败！")
+        return False
 
 
 if __name__ == '__main__':
-    main()
+    success = main()
+    if not success:
+        print("❌ 程序执行失败，退出！")
+        import sys
+        sys.exit(1)

@@ -33,13 +33,7 @@ FUTURES_CONFIG = {
     }
 }
 
-# 默认数据配置
-DEFAULT_INDEX_DATA = {
-    '000001': {'price': 3050.25, 'prev_price': 3020.8, 'change': 29.45, 'change_pct': 0.97},
-    '399006': {'price': 1850.75, 'prev_price': 1880.3, 'change': -29.55, 'change_pct': -1.57},
-    '000688': {'price': 950.3, 'prev_price': 945.2, 'change': 5.1, 'change_pct': 0.54},
-    '000985': {'price': 4750.8, 'prev_price': 4720.5, 'change': 30.3, 'change_pct': 0.64}
-}
+
 
 # 文件路径配置
 FILE_PATHS = {
