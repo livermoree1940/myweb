@@ -1,0 +1,193 @@
+{
+  "total_stocks": 336,
+  "total_concepts": 682,
+  "unique_concepts": 157,
+  "hot_concepts": [
+    {
+      "rank": 1,
+      "concept": "商业航天",
+      "count": 47,
+      "percentage": 13.99
+    },
+    {
+      "rank": 2,
+      "concept": "存储芯片",
+      "count": 37,
+      "percentage": 11.01
+    },
+    {
+      "rank": 3,
+      "concept": "卫星导航",
+      "count": 18,
+      "percentage": 5.36
+    },
+    {
+      "rank": 4,
+      "concept": "金属铅",
+      "count": 18,
+      "percentage": 5.36
+    },
+    {
+      "rank": 5,
+      "concept": "人形机器人",
+      "count": 17,
+      "percentage": 5.06
+    },
+    {
+      "rank": 6,
+      "concept": "小红书概念",
+      "count": 16,
+      "percentage": 4.76
+    },
+    {
+      "rank": 7,
+      "concept": "金属锌",
+      "count": 16,
+      "percentage": 4.76
+    },
+    {
+      "rank": 8,
+      "concept": "小金属概念",
+      "count": 16,
+      "percentage": 4.76
+    },
+    {
+      "rank": 9,
+      "concept": "快手概念",
+      "count": 14,
+      "percentage": 4.17
+    },
+    {
+      "rank": 10,
+      "concept": "可控核聚变",
+      "count": 14,
+      "percentage": 4.17
+    },
+    {
+      "rank": 11,
+      "concept": "AI应用",
+      "count": 13,
+      "percentage": 3.87
+    },
+    {
+      "rank": 12,
+      "concept": "核电",
+      "count": 13,
+      "percentage": 3.87
+    },
+    {
+      "rank": 13,
+      "concept": "共封装光学(CPO)",
+      "count": 12,
+      "percentage": 3.57
+    },
+    {
+      "rank": 14,
+      "concept": "金属铜",
+      "count": 12,
+      "percentage": 3.57
+    },
+    {
+      "rank": 15,
+      "concept": "稀土永磁",
+      "count": 12,
+      "percentage": 3.57
+    },
+    {
+      "rank": 16,
+      "concept": "黄金概念",
+      "count": 11,
+      "percentage": 3.27
+    },
+    {
+      "rank": 17,
+      "concept": "国家大基金持股",
+      "count": 10,
+      "percentage": 2.98
+    },
+    {
+      "rank": 18,
+      "concept": "柔性直流输电",
+      "count": 10,
+      "percentage": 2.98
+    },
+    {
+      "rank": 19,
+      "concept": "先进封装",
+      "count": 10,
+      "percentage": 2.98
+    },
+    {
+      "rank": 20,
+      "concept": "汽车芯片",
+      "count": 9,
+      "percentage": 2.68
+    },
+    {
+      "rank": 21,
+      "concept": "大飞机",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 22,
+      "concept": "太赫兹",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 23,
+      "concept": "中国AI",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 24,
+      "concept": "50",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 25,
+      "concept": "芯片概念",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 26,
+      "concept": "PCB概念",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 27,
+      "concept": "军民融合",
+      "count": 7,
+      "percentage": 2.08
+    },
+    {
+      "rank": 28,
+      "concept": "抽水蓄能",
+      "count": 6,
+      "percentage": 1.79
+    },
+    {
+      "rank": 29,
+      "concept": "AI语料",
+      "count": 6,
+      "percentage": 1.79
+    },
+    {
+      "rank": 30,
+      "concept": "MCU芯片",
+      "count": 6,
+      "percentage": 1.79
+    }
+  ],
+  "concept_distribution": {
+    "1-5次": 127,
+    "6-10次": 14,
+    "11-20次": 14,
+    "20次以上": 2
+  }
+}

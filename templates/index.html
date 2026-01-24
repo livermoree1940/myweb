@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票行情与量化策略仪表盘</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-main: #333;
+            --text-muted: #666;
+            --red: #e74c3c;
+            --green: #27ae60;
+            --blue: #3498db;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            padding: 20px 0;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        h1 { margin: 0; color: var(--primary-color); font-size: 24px; }
+        .last-update { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stock-card {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stock-card h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .stock-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stock-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stock-change {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .change-positive {
+            color: var(--green);
+        }
+
+        .change-negative {
+            color: var(--red);
+        }
+
+        .indices-section {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .indices-section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .indices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .index-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--blue);
+        }
+
+        .index-name {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .index-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .index-change {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .chart-section {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .chart-section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .chart-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .strategy-card { }
+        .card-header { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: var(--primary-color); display: flex; align-items: center; }
+        .card-header .icon { margin-right: 10px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        
+        .summary-item .label { font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+        .summary-item .value { font-size: 18px; font-weight: bold; }
+
+        .sub-card { margin-top: 25px; border-top: 1px dashed #eee; padding-top: 20px; }
+        .sub-header { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: var(--text-muted); }
+
+        .strategy-img { 
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 8px; 
+            margin: 20px auto; 
+            display: block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .table-container { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .data-table th { background: #f8f9fa; color: var(--text-muted); text-align: left; padding: 12px 8px; border-bottom: 2px solid #eee; }
+        .data-table td { padding: 10px 8px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background-color: #fafafa; }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .status-red { background: #fdeaea; color: var(--red); }
+        .status-green { background: #e6f4ea; color: var(--green); }
+        .status-yellow { background: #fff8e1; color: #f39c12; }
+        .status-blue { background: #e8f4fd; color: var(--blue); }
+
+        .text-red { color: var(--red); }
+        .text-green { color: var(--green); }
+        
+        .footer-tip { font-size: 12px; color: #999; text-align: center; margin-top: 20px; }
+
+        .footer {
+            padding: 15px 25px;
+            background: #f8f9fa;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .price-value { font-size: 24px; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+            .indices-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>股票行情与量化策略仪表盘</h1>
+            <div class="last-update">最后更新时间：{{date}}</div>
+        </header>
+        
+        <div class="card">
+            <h2>{{stock.name}}（{{stock.symbol}}）</h2>
+            <div class="stock-info">
+                <div class="stock-price">¥{{stock.price}}</div>
+                <div class="stock-change {% if stock.change >= 0 %}change-positive{% else %}change-negative{% endif %}">
+                    {% if stock.change >= 0 %}+{% endif %}{{stock.change}} ({% if stock.change >= 0 %}+{% endif %}{{stock.change_pct}}%)
+                </div>
+            </div>
+        </div>
+        
+        {% if stock_kline_html %}
+        <div class="card">
+            <h2>{{stock.name}}日K线图</h2>
+            <div class="chart-container">
+                {{ stock_kline_html | safe }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <h2>市场指数</h2>
+            <div class="indices-grid">
+                {% for index in indices %}
+                <div class="index-card">
+                    <div class="index-name">{{index.name}}（{{index.symbol}}）</div>
+                    <div class="index-price">{{index.price}}</div>
+                    <div class="index-change {% if index.change >= 0 %}change-positive{% else %}change-negative{% endif %}">
+                        {% if index.change >= 0 %}+{% endif %}{{index.change}} ({% if index.change >= 0 %}+{% endif %}{{index.change_pct}}%)
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>股指期货基差分析</h2>
+            <div style="margin-bottom: 15px;">
+                <button id="show-hs300" class="badge status-blue" style="cursor: pointer; margin-right: 10px;">沪深300</button>
+                <button id="show-zz1000" class="badge" style="cursor: pointer;">中证1000</button>
+            </div>
+            <div class="chart-container">
+                <div id="hs300-chart" {% if not has_hs300_chart %}style="display: none;"{% endif %}>
+                    {{ hs300_chart_html | safe }}
+                </div>
+                <div id="zz1000-chart" style="display: none;">
+                    {{ zz1000_chart_html | safe }}
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const hs300Btn = document.getElementById('show-hs300');
+                        const zz1000Btn = document.getElementById('show-zz1000');
+                        const hs300Chart = document.getElementById('hs300-chart');
+                        const zz1000Chart = document.getElementById('zz1000-chart');
+                        
+                        // 默认显示沪深300
+                        if (hs300Chart) {
+                            hs300Chart.style.display = 'block';
+                        }
+                        
+                        hs300Btn.addEventListener('click', function() {
+                            if (hs300Chart) {
+                                hs300Chart.style.display = 'block';
+                            }
+                            if (zz1000Chart) {
+                                zz1000Chart.style.display = 'none';
+                            }
+                            hs300Btn.className = 'badge status-blue';
+                            zz1000Btn.className = 'badge';
+                        });
+                        
+                        zz1000Btn.addEventListener('click', function() {
+                            if (hs300Chart) {
+                                hs300Chart.style.display = 'none';
+                            }
+                            if (zz1000Chart) {
+                                zz1000Chart.style.display = 'block';
+                            }
+                            hs300Btn.className = 'badge';
+                            zz1000Btn.className = 'badge status-blue';
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>TL0期货行情</h2>
+            <div class="chart-container">
+                <iframe 
+                    id="tl0-frame" 
+                    src="https://finance.sina.com.cn/futures/quotes/TL0.shtml" 
+                    width="100%" 
+                    height="200" 
+                    frameborder="0" 
+                    marginwidth="0" 
+                    marginheight="0" 
+                    scrolling="auto">
+                </iframe>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const frame = document.getElementById('tl0-frame');
+                        frame.onload = function() {
+                            try {
+                                // 尝试在iframe加载完成后模拟点击全屏按钮
+                                const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                                // 查找全屏按钮（根据新浪财经页面结构）
+                                const fullscreenBtn = frameDoc.querySelector('.kke_cfg_fullscreen');
+                                if (fullscreenBtn) {
+                                    fullscreenBtn.click();
+                                    console.log('自动点击全屏按钮');
+                                }
+                            } catch (e) {
+                                console.log('无法自动全屏：', e);
+                            }
+                        };
+                    });
+                </script>
+            </div>
+        </div>
+        
+        {% if recent_trading_data %}
+        <div class="card">
+            <h2>最新核心数据波动（最近20个交易日）</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>开盘</th>
+                            <th>最高</th>
+                            <th>最低</th>
+                            <th>收盘</th>
+                            <th>涨跌</th>
+                            <th>涨跌幅</th>
+                            <th>成交量</th>
+                            <th>成交额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in recent_trading_data %}
+                        <tr class="trading-day-row">
+                            <td>{{ day.date }}</td>
+                            <td>{{ day.open }}</td>
+                            <td>{{ day.high }}</td>
+                            <td>{{ day.low }}</td>
+                            <td>{{ day.close }}</td>
+                            <td class="{% if day.change >= 0 %}change-positive{% else %}change-negative{% endif %}">
+                                {% if day.change >= 0 %}+{% endif %}{{ day.change }}
+                            </td>
+                            <td class="{% if day.change >= 0 %}change-positive{% else %}change-negative{% endif %}">
+                                {% if day.change >= 0 %}+{% endif %}{{ day.change_pct }}%
+                            </td>
+                            <td>{{ day.volume }}</td>
+                            <td>{{ day.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                {% if strategy_html %}
+                    <h2>红利ETF 策略分析</h2>
+                    <button id="toggle-strategy-data" class="badge status-blue" style="cursor: pointer;">展开</button>
+                {% else %}
+                    <h2>红利ETF 策略分析</h2>
+                {% endif %}
+            </div>
+            <div id="strategy-content">
+                {% if strategy_html %}
+                    {{ strategy_html }}
+                {% else %}
+                    <div class="card-header">红利ETF 策略分析</div>
+                    {% if latest_png %}
+                    <img src="{{latest_png}}" alt="策略分析图" class="strategy-img">
+                    {% else %}
+                    <p style="text-align: center; color: var(--text-muted);">暂无策略分析图</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const toggleBtn = document.getElementById('toggle-strategy-data');
+                    if (toggleBtn) {
+                        const strategyContent = document.getElementById('strategy-content');
+                        let isExpanded = false;
+                        
+                        // 初始隐藏表格部分
+                        const tables = strategyContent.querySelectorAll('.table-container');
+                        tables.forEach(table => {
+                            table.style.display = 'none';
+                        });
+                        
+                        toggleBtn.addEventListener('click', function() {
+                            isExpanded = !isExpanded;
+                            
+                            tables.forEach(table => {
+                                table.style.display = isExpanded ? '' : 'none';
+                            });
+                            
+                            toggleBtn.textContent = isExpanded ? '收起' : '展开';
+                            toggleBtn.className = isExpanded ? 'badge status-yellow' : 'badge status-blue';
+                        });
+                    }
+                });
+            </script>
+        </div>
+        
+        {% if hot_concepts %}
+        <div class="card">
+            <h2>热点概念分析</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="label">总股票数量</div>
+                    <div class="value">{{ hot_concepts.total_stocks }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">总概念数量</div>
+                    <div class="value">{{ hot_concepts.total_concepts }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">不同概念数量</div>
+                    <div class="value">{{ hot_concepts.unique_concepts }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">热门概念Top 30</div>
+                    <div class="value">{{ hot_concepts.hot_concepts | length }}</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>概念</th>
+                            <th>出现次数</th>
+                            <th>占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for concept in hot_concepts.hot_concepts[:20] %}
+                        <tr>
+                            <td>{{ concept.rank }}</td>
+                            <td>{{ concept.concept }}</td>
+                            <td>{{ concept.count }}</td>
+                            <td>{{ concept.percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="sub-card">
+                <div class="sub-header">概念分布</div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="label">1-5次</div>
+                        <div class="value">{{ hot_concepts.concept_distribution['1-5次'] }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">6-10次</div>
+                        <div class="value">{{ hot_concepts.concept_distribution['6-10次'] }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">11-20次</div>
+                        <div class="value">{{ hot_concepts.concept_distribution['11-20次'] }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="label">20次以上</div>
+                        <div class="value">{{ hot_concepts.concept_distribution['20次以上'] }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if stocks_by_concept %}
+        <div class="card">
+            <h2>按概念分组个股</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="label">总股票数量</div>
+                    <div class="value">{{ stocks_by_concept.total_stocks }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="label">概念数量</div>
+                    <div class="value">{{ stocks_by_concept.total_concepts }}</div>
+                </div>
+            </div>
+            
+            <div class="concept-stocks-container">
+                {% for concept_group in stocks_by_concept.sorted_concepts[:15] %}
+                <div class="sub-card">
+                    <div class="sub-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ concept_group.concept }}</span>
+                        <span class="badge status-blue">{{ concept_group.stocks | length }}只股票</span>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>股票名称</th>
+                                    <th>代码</th>
+                                    <th>涨跌幅</th>
+                                    <th>热度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stock in concept_group.stocks[:10] %}
+                                <tr>
+                                    <td>{{ stock.name }}</td>
+                                    <td>{{ stock.code }}</td>
+                                    <td class="{% if stock.change >= 0 %}text-green{% else %}text-red{% endif %}">
+                                        {% if stock.change >= 0 %}+{% endif %}{{ stock.change }}%
+                                    </td>
+                                    <td>{{ stock.hot }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if concept_group.stocks | length > 10 %}
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted); font-size: 13px;">
+                                        显示前10只股票，共{{ concept_group.stocks | length }}只
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="footer">
+            数据来源：akshare | 更新时间：{{date}}
+        </div>
+    </div>
+</body>
+</html>
